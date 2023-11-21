@@ -57,8 +57,7 @@
 				2,
 				3,
 				4,
-				5,
-				6
+				5
 			]
 		}
 	],
@@ -100,8 +99,7 @@
 				2,
 				3,
 				4,
-				5,
-				6
+				5
 			]
 		}
 	],
@@ -134,19 +132,13 @@
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "zadanie/zadanie1_1_Kokin.cpp",
-			"sourceGroupIndex" : 0
-		},
-		{
-			"backtrace" : 1,
-			"compileGroupIndex" : 0,
 			"path" : "zadanie/zadanie2_Kokin.cpp",
 			"sourceGroupIndex" : 0
 		},
 		{
 			"backtrace" : 1,
 			"compileGroupIndex" : 0,
-			"path" : "zadanie/zadanie1_2_Kokin.cpp",
+			"path" : "zadanie/zadanie3_a_Kokin.cpp",
 			"sourceGroupIndex" : 0
 		}
 	],
