@@ -31,7 +31,7 @@ void makeset(int i) {
 
 void initial(int i) {
     index ind;
-
+    // creates i + 1 sets
     for(ind = 0; ind <= i; ind++) {
         makeset(ind);
     }
@@ -40,7 +40,7 @@ void initial(int i) {
 void merge(set_pointer p, set_pointer q) {
     if (U[p].depth == U[q].depth) {
         U[p].depth = U[p].depth + 1;
-        U[q].depth = U[p].depth + 1;
+        U[q].parent = p;
         if (U[q].smallest < U[p].smallest) {
             U[p].smallest = U[q].smallest;
         }
@@ -83,15 +83,18 @@ void copy_vector(vector<int> from, vector<int> *to) {
 
 int get_max_deadline(vector<vector<int>> input)
 {
-    int ans = INT_MIN;
+    int max = INT_MIN;
     for (int i = 0; i < n; i++)
-        ans = max(ans, input[i][1]);
-    return ans;
+        if (max <  input[i][1]) {
+            max = input[i][1];
+        }
+    return max;
 }
 
 void schedule(vector<vector<int>> input) {
 
     int d = get_max_deadline(input);
+    // creates d + 1 sets
     initial(d);
 
     // Traverse through all the jobs
@@ -113,12 +116,10 @@ void schedule(vector<vector<int>> input) {
             // for availableSlot will return maximum
             // available slot in set of
             // "availableSlot - 1"
-            merge(find(availableSlot - 1),
-                     availableSlot);
-            cout << availableSlot << " ; ";
+            merge(find(availableSlot - 1), availableSlot);
+            cout << "job number " << input[i][0] << " at day " << availableSlot << "; " << endl;
         }
     }
-
 }
 
 bool sortByProfit(const vector<int>& v1, const vector<int>& v2)
@@ -136,7 +137,7 @@ int main () {
             {4, 2, 20},
             {5, 3, 10},
             {6, 1, 45},
-            {7, 1, 55}
+            {7, 3, 55}
     };
 
     // since implementation of the sorting algorithm is not part
