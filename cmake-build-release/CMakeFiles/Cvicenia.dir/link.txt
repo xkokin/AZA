@@ -1,0 +1,3 @@
+"D:\IT_soft\CLion\CLion 2022.3.2\bin\cmake\win\x64\bin\cmake.exe" -E rm -f CMakeFiles\Cvicenia.dir/objects.a
+"D:\IT_soft\CLion\CLion 2022.3.2\bin\mingw\bin\ar.exe" qc CMakeFiles\Cvicenia.dir/objects.a @CMakeFiles\Cvicenia.dir\objects1.rsp
+"D:\IT_soft\CLion\CLion 2022.3.2\bin\mingw\bin\g++.exe" -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\Cvicenia.dir/objects.a -Wl,--no-whole-archive -o Cvicenia.exe -Wl,--out-implib,libCvicenia.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\Cvicenia.dir\linklibs.rsp

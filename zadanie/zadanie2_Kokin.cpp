@@ -23,13 +23,13 @@ struct disjoint_set
 typedef disjoint_set universe[n];
 universe U;
 
-void makeset(int i) {
+void makeset(int i) { // O(1)
     U[i].parent = i;
     U[i].depth = 0;
     U[i].smallest = i;
 }
 
-void initial(int i) {
+void initial(int i) { // O(n)
     index ind;
     // creates i + 1 sets
     for(ind = 0; ind <= i; ind++) {
@@ -37,21 +37,38 @@ void initial(int i) {
     }
 }
 
+bool equal(set_pointer p, set_pointer q) { // O(1)
+    if (p == q) {
+        return true;
+    }
+    else {
+        return false;
+    }
+}
+
 void merge(set_pointer p, set_pointer q) {
-    if (U[p].depth == U[q].depth) {
+    // if both sets are at the same depth and q set doesn't already have parent
+    if (U[p].depth == U[q].depth && equal(U[q].parent, q)) { // O(1)
         U[p].depth = U[p].depth + 1;
         U[q].parent = p;
         if (U[q].smallest < U[p].smallest) {
             U[p].smallest = U[q].smallest;
         }
     }
-    else if (U[p].depth < U[q].depth) {
+    // either depths of sets are not the same or q set has parent that is not q itself
+    else if (U[p].depth <= U[q].depth) { // O(nlgn)
         U[p].parent = q;
-        if (U[p].smallest < U[q].smallest) {
+
+        // update smallest member of the set in the root
+        while (U[p].smallest < U[q].smallest) { // O(nlgn)  thanks to depth attribute
             U[q].smallest = U[p].smallest;
+            index parent = U[q].parent;
+            p = q;
+            q = parent;
         }
     }
-    else {
+    // p set is deeper
+    else { //O (1)
         U[q].parent = p;
         if (U[q].smallest < U[p].smallest) {
             U[p].smallest = U[q].smallest;
@@ -59,7 +76,7 @@ void merge(set_pointer p, set_pointer q) {
     }
 }
 
-int small(set_pointer p) {
+int small(set_pointer p) { // O(1)
     return U[p].smallest;
 }
 
@@ -68,23 +85,16 @@ set_pointer find(int s)
     index j;
 
     j = s;
-    while(U[j].parent != j) {
+    while(U[j].parent != j) { // O(n)
         j = U[j].parent;
     }
     return j;
 }
 
-
-void copy_vector(vector<int> from, vector<int> *to) {
-    for (int i : from) {
-        to->push_back(i);
-    }
-}
-
 int get_max_deadline(vector<vector<int>> input)
 {
     int max = INT_MIN;
-    for (int i = 0; i < n; i++)
+    for (int i = 0; i < n; i++) // O(n)
         if (max <  input[i][1]) {
             max = input[i][1];
         }
@@ -97,27 +107,22 @@ void schedule(vector<vector<int>> input) {
     // creates d + 1 sets
     initial(d);
 
-    // Traverse through all the jobs
+    // go through all jobs
     for (int i = 1; i <= n; i++)
     {
-        // Find the maximum available free slot for
-        // this job (corresponding to its deadline)
-        int availableSlot = small(find(input[i][1]));
+        // maximum available free slot for this job
+        // input[i][1] - deadline of the first job
+        set_pointer availableSlot = find(input[i][1]); // O(n)
+        // smallest member of the found set
+        int availableSlotSmallest = small(availableSlot); // O(1)
 
-        // If maximum available free slot is greater
-        // than 0, then free slot available
-        if (availableSlot > 0)
+        // If smallest available slot is not 0 (what would mean that no free slots left for this deadline)
+        // then proceed to scheduling
+        if (availableSlotSmallest > 0)
         {
-            // This slot is taken by this job 'i'
-            // so we need to update the greatest
-            // free slot. Note that, in merge, we
-            // make first parameter as parent of
-            // second parameter. So future queries
-            // for availableSlot will return maximum
-            // available slot in set of
-            // "availableSlot - 1"
-            merge(find(availableSlot - 1), availableSlot);
-            cout << "job number " << input[i][0] << " at day " << availableSlot << "; " << endl;
+            // merge sets of currently selected one and smaller (earlier set beside it)
+            merge(find(availableSlotSmallest - 1), availableSlotSmallest); // O(nlgn)
+            cout << "job number " << input[i][0] << " at day " << availableSlotSmallest << "; " << endl;
         }
     }
 }
@@ -137,7 +142,7 @@ int main () {
             {4, 2, 20},
             {5, 3, 10},
             {6, 1, 45},
-            {7, 3, 55}
+            {7, 1, 55}
     };
 
     // since implementation of the sorting algorithm is not part
@@ -154,6 +159,6 @@ int main () {
 
     input.insert(input.begin(), {0, 0, 0});
 
-    schedule(input);
+    schedule(input); // the biggest complexity is O(nlgn)
 }
 
