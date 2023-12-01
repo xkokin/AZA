@@ -11,92 +11,40 @@ void step3() {
 
 }
 
-
-
-// find maximum matching inbipartite graph using Hungarian algorithm
-void schedule(vector<vector<int>>& costMatrix, vector<pair<int, int>>& assignmentOrder) {
-    int n = costMatrix.size();
-    int m = costMatrix[0].size();
-
-    // find minimum value in each row and substract it from each element of the row
-    // O(n^2) <= outer loop is O(n) and there are two inner loops, they give O(n)+O(n) = O(n), which makes it O(n * n)
-    for (int i = 0; i < n; i++) {   // O(n)
-        int minVal = INF;
-        for (int j = 0; j < m; j++) { // O(n)
-            minVal = min(minVal, costMatrix[i][j]);
-        }
-        for (int j = 0; j < m; j++) { // O(n)
-            costMatrix[i][j] -= minVal;
-        }
+void print_matrix(vector<vector<int>>& printMatrix, int n) {
+    cout << "\t";
+    for (int j = 1; j <= n; ++j) {
+        cout << "J" << j << "\t";
     }
+    cout << endl;
+    for (int i = 1; i <= n; ++i) {
+        cout << "P" << i << "\t"; // row index
+        for (int j = 1; j <= n; ++j) {
+            cout << printMatrix[i][j] << "\t";
+        }
+        cout << endl;
 
-    // find min value in each column
-    for (int j = 0; j < m; ++j) {
-        int minVal = INF;
-        for (int i = 0; i < n; ++i) {
-            minVal = min(minVal, costMatrix[i][j]);
+        for (int k = 0; k < n * 9; ++k) {
+            cout << "-";
         }
-        for (int i = 0; i < n; ++i) {
-            costMatrix[i][j] -= minVal;
-        }
+        cout << endl;
     }
+}
 
-    // Step 3: Cover all zeros in the matrix with the minimum number of lines
-
-
-    // Step 4: Try to find an assignment by finding a zero not covered by a line
-    while (assignmentOrder.size() < n) {
-        int row = -1, col = -1;
-
-        // Find an uncovered zero
-        for (int i = 0; i < n; ++i) {
-            if (!rowCovered[i]) {
-                for (int j = 0; j < m; ++j) {
-                    if (!colCovered[j] && costMatrix[i][j] == 0) {
-                        row = i;
-                        col = j;
-                        assignmentOrder.push_back({row, col});
-                        rowCovered[row] = true;
-                        colCovered[col] = true;
-                        break;
-                    }
-                }
-            }
-            if (row != -1) {
-                break;
-            }
-        }
-
-        if (row == -1) {
-            // No uncovered zero found, go to step 6
-            break;
-        }
-    }
-
-    // Step 5: Determine the smallest uncovered value (denoted by minVal)
-    int minVal = INF;
-    for (int i = 0; i < n; ++i) {
-        if (!rowCovered[i]) {
-            for (int j = 0; j < m; ++j) {
-                if (!colCovered[j]) {
-                    minVal = min(minVal, costMatrix[i][j]);
-                }
+// find maximum matching in bipartite graph using Hungarian algorithm
+void schedule(vector<vector<int>>& costMatrix, vector<pair<int, int>>& assignmentOrder, int n) {
+    vector<vector<int>> DP(n+1, vector<int>(n+1, 0));
+    for(int person = 1; person <= n; person++){
+        for(int job = 1; job <= n; job++){
+            // try to assign k workers to the jth project
+            for(int act = 1; act <= person; act++){
+                DP[person][job] =
+                        max(DP[person][job], costMatrix[act][job] + DP[person - act][job - 1]);
             }
         }
     }
-
-    // Step 6: Subtract minVal from all uncovered values and add minVal to all doubly covered values
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < m; ++j) {
-            if (!rowCovered[i] && !colCovered[j]) {
-                costMatrix[i][j] -= minVal;
-            } else if (rowCovered[i] && colCovered[j]) {
-                costMatrix[i][j] += minVal;
-            }
-        }
-    }
-
-    return;
+    cout << "result_matrix" << endl;
+    print_matrix(DP, n);
 }
 
 int main() {
@@ -109,10 +57,10 @@ int main() {
     cin >> n;
 
     // Create and initialize the matrix with random numbers
-    vector<vector<int>> initial_matrix(n, vector<int>(n));
-    vector<vector<int>> result_matrix(n, vector<int>(n));
-    for (int i = 0; i < n; ++i) {
-        for (int j = 0; j < n; ++j) {
+    vector<vector<int>> initial_matrix(n+1, vector<int>(n+1));
+    vector<vector<int>> result_matrix(n+1, vector<int>(n+1));
+    for (int i = 1; i <= n; ++i) {
+        for (int j = 1; j <= n; ++j) {
             int random = rand() % 15 + 1;  //random number between 1 and 15
             initial_matrix[i][j] = random;
             result_matrix[i][j] = random;
@@ -120,39 +68,24 @@ int main() {
     }
 
     cout << "initial matrix:" << endl;
-    cout << "\t";
-    for (int j = 1; j <= n; ++j) {
-        cout << "J" << j << "\t";
-    }
-    cout << endl;
 
-    for (int i = 0; i < n; ++i) {
-        cout << "P" << i + 1 << "\t"; // row index
-        for (int j = 0; j < n; ++j) {
-            cout << initial_matrix[i][j] << "\t";
-        }
-        cout << endl;
+    print_matrix(initial_matrix, n);
 
-        for (int k = 0; k < n * 9; ++k) {
-            cout << "-";
-        }
-        cout << endl;
-    }
 
     vector<pair<int, int>> assignmentOrder;
-    schedule(result_matrix, assignmentOrder);
-
-    int cost = 0;
-    for (const auto& pair : assignmentOrder) {
-        cost += initial_matrix[pair.first][pair.second];
-    }
-
-    cout << "Best combination will cost " << cost << endl;
-
-    for (int i = 0; i < assignmentOrder.size(); i++) {
-        cout << "P" << assignmentOrder[i].first + 1 << ": " << assignmentOrder[i].second + 1 << " ; ";
-
-    }
+    schedule(result_matrix, assignmentOrder, n);
+//
+//    int cost = 0;
+//    for (const auto& pair : assignmentOrder) {
+//        cost += initial_matrix[pair.first][pair.second];
+//    }
+//
+//    cout << "Best combination will cost " << cost << endl;
+//
+//    for (int i = 0; i < assignmentOrder.size(); i++) {
+//        cout << "P" << assignmentOrder[i].first + 1 << ": " << assignmentOrder[i].second + 1 << " ; ";
+//
+//    }
 
     return 0;
 }
