@@ -101,26 +101,6 @@ void print_matrix_assignment(vector<vector<int>>& matrix, vector<int>& res) {   
     }
 }
 
-
-void reductionByMax(vector<vector<int>>& matrix) {      // O(n^2)
-    int rows, cols;
-    rows = cols = matrix.size() - 1 ;
-    int max_val = -1;
-
-    for (int i = 1; i <= rows; ++i) {                    // O(n)
-        for (int j = 1; j <= cols; ++j) {                // O(n)
-            max_val = max(max_val, matrix[i][j]);
-        }
-    }
-
-    for (int i = 1; i <= rows; ++i) {                    // O(n)
-        for (int j = 1; j <= cols; ++j) {                // O(n)
-            matrix[i][j] = max_val - matrix[i][j];
-        }
-    }
-
-}
-
 void rowReduction(vector<vector<int>>& matrix) {        // O(n^2)
     int rows, cols;
     rows = cols = matrix.size() - 1;
@@ -180,8 +160,8 @@ vector<Line> getMinimumLines(vector<vector<int>>& matrix) {             // O(n^3
     LineType last_inserted_line_type = NONE;
 
     // while there are 0's to count in either rows or columns
-    while (!isZero(zeros_per_row) && !isZero(zeros_per_col)) {   //O(n^2) - because to check all zeroes we
-                                                                            // have to check all cells of nXn matrix
+    while (!isZero(zeros_per_row) && !isZero(zeros_per_col)) {   //O(n) - because to check all zeroes we
+                                                                            // have to check all rows or cols of nXn matrix
         // search the largest count of 0's in both arrays
         int max = -1;
         Line line_with_most_zeros(0, HORIZONTAL);
@@ -304,8 +284,6 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
 
     n = rows = cols = matrix.size() - 1;
 
-    // maximization of profit case
-    reductionByMax(matrix);                 // O(n^2)
     // step 1
     rowReduction(matrix);                   // O(n^2)
     // step 2
@@ -314,8 +292,8 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
     cout << "Matrix after reductions: " << endl;
     print_matrix(matrix);                   // O(n^2)
     // step 3 - check if minimum of lines that cover all zeroes is equal to number of rows/columns
-    while (lines_cnt != n) {
-        lines = getMinimumLines(matrix);    // O(n^3)
+    while (lines_cnt != n) {                    // O(?)
+        lines = getMinimumLines(matrix);    // O(n^2)
         lines_cnt = lines.size();
         cout << "Minimum number of lines is " << lines_cnt << endl;
         //step 4 - add additional zeroes
@@ -346,6 +324,7 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
 
     if (assigned != n) {
         assigned = 0;
+        profit = 0;
         fill(bannedCols.begin(), bannedCols.end(), 0);
         for (int i = 1; i <= rows; i++) {   // O(n^2)
             for (int j = cols; j >= 1; j--) {
@@ -360,6 +339,7 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
         }
         if (assigned != n) {
             assigned = 0;
+            profit = 0;
             fill(bannedCols.begin(), bannedCols.end(), 0);
             for (int i = rows; i >= 1; i--) {   // O(n^2)
                 for (int j = cols; j >= 1; j--) {
@@ -374,6 +354,7 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
             }
             if (assigned != n) {
                 assigned = 0;
+                profit = 0;
                 fill(bannedCols.begin(), bannedCols.end(), 0);
                 for (int i = rows; i >= 1; i--) {   // O(n^2)
                     for (int j = 1; j <= cols; j++) {
@@ -413,7 +394,7 @@ int main() {
     // Create and initialize the matrix with random numbers
     vector<vector<int>> initial_matrix(n+1, vector<int>(n+1));
     vector<vector<int>> result_matrix(n+1, vector<int>(n+1));
-    for (int i = 1; i <= n; ++i) {
+    for (int i = 1; i <= n; ++i) {              // O (n^2)
         for (int j = 1; j <= n; ++j) {
             int random = rand() % 15 + 1;  //random number between 1 and 15
             initial_matrix[i][j] = random;
@@ -421,9 +402,9 @@ int main() {
         }
     }
 
-    cout << "initial matrix:" << endl;
+    cout << "Initial matrix:" << endl;
 
-    print_matrix(initial_matrix);
+    print_matrix(initial_matrix); // O (n^2)
 
 
     vector<pair<int, int>> assignmentOrder;

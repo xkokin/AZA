@@ -5,9 +5,42 @@
 #include<algorithm>
 #include <cstdlib>
 #include <ctime>
+#include <Windows.h>
 using namespace std;
 
-vector<int> schedule(int n, vector<vector<int>> matrix) {
+void print_matrix_assignment(vector<vector<int>>& matrix, vector<int>& res) {    //O(n^2)
+    int rows, cols;
+    rows = cols = matrix.size();
+
+    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    cout << "\t";
+    for (int j = 0; j < cols; ++j) {
+        cout << "J" << j + 1  << "\t";
+    }
+    cout << endl;
+    for (int i = 0; i < rows; ++i) {
+        cout << "P" << i + 1 << "\t"; // row index
+        for (int j = 0; j < cols; ++j) {
+            if (res[i] - 1 == j) {
+                SetConsoleTextAttribute(hConsole, 4);
+                cout << matrix[i][j] << "\t";
+                SetConsoleTextAttribute(hConsole, 7);
+            }
+            else {
+                cout << matrix[i][j] << "\t";
+            }
+        }
+        cout << endl;
+
+        for (int k = 0; k < rows * 9; ++k) {
+            cout << "-";
+        }
+        cout << endl;
+    }
+}
+
+vector<int> schedule(int n, vector<vector<int>> matrix) { // O (n^2)
     vector<int> res(n);
     vector<int> taken(n, -1); // contains indexes of jobs that are taken
 
@@ -69,7 +102,7 @@ int main () {
     }
     cout << endl;
 
-    for (int i = 0; i < n; ++i) {
+    for (int i = 0; i < n; ++i) {       //O(n^2)
         cout << "P" << i + 1 << "\t"; // Print row index
         for (int j = 0; j < n; ++j) {
             cout << matrix[i][j] << "\t";
@@ -83,6 +116,8 @@ int main () {
     }
 
     vector<int> res = schedule(n, matrix);
+
+    print_matrix_assignment(matrix, res);
 
     for (int i: res) {
         cout << i << "; ";

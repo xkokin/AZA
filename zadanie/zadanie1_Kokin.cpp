@@ -11,13 +11,13 @@ void copy_vector(vector<int> from, vector<int> *to) {
     }
 }
 
-vector<vector<int>> schedule(int n, vector<vector<int>> input) {
+vector<int> schedule(int n, vector<vector<int>> input) { // input dvojrozmerne pole, kde 0 element je index deadlinu, 1 je deadline a 2 - profit
     // let result be collection of jobs indexes
     // as deadlines are sorted in decreasing order from the biggest job profit
-    vector<vector<int>> result;                                 // dvojrozmerne pole, kde 0 element je index deadlinu, 1 je deadline a 2 - profit
+    vector<int> result(n+1);
     vector<int> empty_indexes(n+1);                          // let empty_indexes be a vector with states of indexes
     result.resize(input.size());
-    copy_vector(input[1], &result[input[1][1]]);       // assign job to the index of deadline in result vector
+    result[input[1][1]] = input[1][0];
 
     // we will initialize free indexes with number -1 on the deadline of the first element as it is already picked
     empty_indexes[input[1][1]] = -1;
@@ -27,10 +27,10 @@ vector<vector<int>> schedule(int n, vector<vector<int>> input) {
     // inner is O(n) aswell, together they give us O(n^2)
     // other operations are O(1)
     // so, the complexity is O(n)
-    for (int i = 2; i <= n; i++) {
-        for(int j = input[i][1]; j > 0; j--) {
+    for (int i = 2; i <= n; i++) {                              // O(n)
+        for(int j = input[i][1]; j > 0; j--) {                  // O(n)
             if (empty_indexes[j] != -1) {
-                copy_vector(input[i], &result[j]);
+                result[j] = input[i][0];
                 empty_indexes[j] = -1;
                 break;
             }
@@ -74,10 +74,11 @@ int main () {
 
     input.insert(input.begin(), {0, 0, 0});
 
-    vector<vector<int>> result = schedule(n, input);
+    vector<int> result = schedule(n, input);
+
     for (int i = 0; i < result.size(); i++) {       // this whole cycle is O(n)
-        if (!result[i].empty() && result[i][0] != 0) {
-            cout << result[i][0] << "; ";
+        if (result[i] != 0) {
+            cout << result[i] << "; ";
         }
     }
     cout << endl;
