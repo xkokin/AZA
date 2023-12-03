@@ -1,3 +1,0 @@
-E:/Study/5_ZS/AZA/Implementacia/cmake-build-debug/CMakeFiles/Cvicenia.dir
-E:/Study/5_ZS/AZA/Implementacia/cmake-build-debug/CMakeFiles/edit_cache.dir
-E:/Study/5_ZS/AZA/Implementacia/cmake-build-debug/CMakeFiles/rebuild_cache.dir
