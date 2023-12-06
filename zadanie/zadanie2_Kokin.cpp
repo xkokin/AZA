@@ -56,11 +56,11 @@ void merge(set_pointer p, set_pointer q) {
         }
     }
     // either depths of sets are not the same or q set has parent that is not q itself
-    else if (U[p].depth <= U[q].depth) { // O(nlgn)
+    else if (U[p].depth <= U[q].depth) { // O(logm)
         U[p].parent = q;
 
         // update smallest member of the set in the root
-        while (U[p].smallest < U[q].smallest) { // O(nlgn)  thanks to depth attribute
+        while (U[p].smallest < U[q].smallest) { // O(logm)  thanks to depth attribute
             U[q].smallest = U[p].smallest;
             index parent = U[q].parent;
             p = q;
@@ -112,7 +112,7 @@ void schedule(vector<vector<int>> input) {
     {
         // maximum available free slot for this job
         // input[i][1] - deadline of the first job
-        set_pointer availableSlot = find(input[i][1]); // O(n)
+        set_pointer availableSlot = find(input[i][1]); // O(logm)
         // smallest member of the found set
         int availableSlotSmallest = small(availableSlot); // O(1)
 
@@ -121,7 +121,7 @@ void schedule(vector<vector<int>> input) {
         if (availableSlotSmallest > 0)
         {
             // merge sets of currently selected one and smaller (earlier set beside it)
-            merge(find(availableSlotSmallest - 1), availableSlotSmallest); // O(nlgn)
+            merge(find(availableSlotSmallest - 1), availableSlotSmallest); // O(logm)
             cout << "job number " << input[i][0] << " at day " << availableSlotSmallest << "; " << endl;
         }
     }
@@ -158,7 +158,7 @@ int main () {
     }
 
     input.insert(input.begin(), {0, 0, 0});
-
-    schedule(input); // the biggest complexity is O(nlgn)
+    cout << "Scheduling is next:" << endl;
+    schedule(input); // the biggest complexity is O(nlogm)
 }
 

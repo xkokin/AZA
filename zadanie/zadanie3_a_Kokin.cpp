@@ -119,9 +119,10 @@ int main () {
 
     print_matrix_assignment(matrix, res);
 
-    for (int i: res) {
-        cout << i << "; ";
+    int profit = 0;
+    for (int i = 0; i < res.size(); i++) {
+        profit += matrix[i][res[i]-1];
     }
-    cout << endl;
+    cout << "Profit is " << profit << endl;
 }
 

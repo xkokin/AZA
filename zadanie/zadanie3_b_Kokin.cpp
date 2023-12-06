@@ -292,7 +292,8 @@ void hungarianAlgo(vector<vector<int>>& matrix, vector<vector<int>>& initMatrix)
     cout << "Matrix after reductions: " << endl;
     print_matrix(matrix);                   // O(n^2)
     // step 3 - check if minimum of lines that cover all zeroes is equal to number of rows/columns
-    while (lines_cnt != n) {                    // O(?)
+    while (lines_cnt != n) {                    // O(n)  because we need to make maximum of n-1 modifications to find
+                                                // minimum lines so their number is equal to n
         lines = getMinimumLines(matrix);    // O(n^2)
         lines_cnt = lines.size();
         cout << "Minimum number of lines is " << lines_cnt << endl;
